@@ -1,0 +1,65 @@
+syntax = "proto2";
+
+package dispatch.model;
+
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+  flat_package: true
+};
+
+message DispatchInfo {
+
+    enum channelType {
+        SMS = 1;
+        VIBER = 2;
+        WHATSUP = 3;
+    }
+
+    message Id {
+        required string id = 1; // uuid
+    }
+
+    message WithId {
+        required DispatchInfo.Id id = 1;
+        required DispatchInfo info = 2;
+    }
+
+   required string recepient = 1; // номер телефона
+   required channelType channel = 2; // Канал доставки: sms|email|viber
+   required string content = 3; // текст сообщения
+   required string expiryAt = 4; // дата после которой сообщение устаревает
+   required int32 retriesCount = 5; // количество попыток доставки
+
+}
+
+message Request {
+
+    message CreateDispatch {
+        required DispatchInfo dispatchInfo = 1;
+    }
+
+    message GetNewMessage {}
+
+
+
+}
+
+message Response {
+
+    enum Result {
+        OK = 1;
+        FAIL = 2;
+    }
+
+    required Result result = 1;
+    optional string description = 2;
+
+}
+
+service DispatchRefService {
+
+    rpc create(Request.CreateDispatch) returns (DispatchInfo.Id) {} // создать рассылку
+    rpc getNewMessage(Request.GetNewMessage) returns (stream DispatchInfo.Id) {} // получить стрим в котором будут публиковаться новые id рассылок
+
+}

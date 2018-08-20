@@ -1,0 +1,19 @@
+version: "2"
+services:
+ router:
+  environment:
+   - ref_service_host=ref-service
+   - ref_service_port=9010
+  image: dispatch/router:0.1.0-SNAPSHOT
+  ports:
+   - "9010:8080"
+
+ ref-service:
+  image: dispatch/ref_service:0.1.0-SNAPSHOT
+
+ dispatch-service:
+   environment:
+    - ref_service_host=ref-service
+    - ref_service_port=9010
+   image:  dispatch/dispatch_service:0.1.0-SNAPSHOT
+
