@@ -38,7 +38,10 @@ lazy val ref_service = (project in file("ref_service"))
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.rxscala,
-      Dependencies.pgdriver
+      Dependencies.pgdriver,
+      Dependencies.scalatest,
+      Dependencies.ficus,
+      Dependencies.flyway
     ) ++ Dependencies.slick
   )
   .settings(dockerSettings: _*)

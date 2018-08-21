@@ -6,6 +6,7 @@ import "scalapb/scalapb.proto";
 
 option (scalapb.options) = {
   flat_package: true
+  import: "pbmodels.TypeMappers._"
 };
 
 message DispatchInfo {
@@ -17,7 +18,7 @@ message DispatchInfo {
     }
 
     message Id {
-        required string id = 1; // uuid
+        required string id = 1 [(scalapb.field).type = "java.util.UUID"]; // uuid
     }
 
     message WithId {
@@ -25,10 +26,10 @@ message DispatchInfo {
         required DispatchInfo info = 2;
     }
 
-   required string recepient = 1; // номер телефона
+   required string recipient = 1; // номер телефона
    required channelType channel = 2; // Канал доставки: sms|email|viber
    required string content = 3; // текст сообщения
-   required string expiryAt = 4; // дата после которой сообщение устаревает
+   required string expiryAt = 4 [(scalapb.field).type = "java.time.LocalDateTime"]; // дата после которой сообщение устаревает
    required int32 retriesCount = 5; // количество попыток доставки
 
 }
@@ -60,6 +61,6 @@ message Response {
 service DispatchRefService {
 
     rpc create(Request.CreateDispatch) returns (DispatchInfo.Id) {} // создать рассылку
-    rpc getNewMessage(Request.GetNewMessage) returns (stream DispatchInfo.Id) {} // получить стрим в котором будут публиковаться новые id рассылок
+    rpc getNewMessage(Request.GetNewMessage) returns (stream DispatchInfo.WithId) {} // получить стрим в котором будут публиковаться новые id рассылок
 
 }

@@ -29,7 +29,7 @@ class Router(
           } yield newId
 
           onComplete(newId) {
-            case Success(id) => complete(id.toString)
+            case Success(id) => complete(id.id.toString)
             case Failure(err) => complete(HttpResponse(status = StatusCodes.BadRequest, entity = s"error: ${err.getMessage}"))
           }
 

@@ -10,6 +10,10 @@ services:
 
  ref-service:
   image: dispatch/ref_service:0.1.0-SNAPSHOT
+  environment:
+   - db_jdbc_url=jdbc:postgresql://db:5432/example
+   - db_user=example
+   - db_password=example
 
  dispatch-service:
    environment:
@@ -17,3 +21,28 @@ services:
     - ref_service_port=9010
    image:  dispatch/dispatch_service:0.1.0-SNAPSHOT
 
+ db:
+   image: postgres:10.4
+   restart: always
+   environment:
+     POSTGRES_USER: example
+     POSTGRES_PASSWORD: example
+   volumes:
+     - "./pgdata:/var/lib/postgresql/data"
+   ports:
+     - "5432:5432"
+   logging:
+       driver: none
+
+ pgadmin:
+  image: dpage/pgadmin4
+  ports:
+    - 80
+  environment:
+    - PGADMIN_DEFAULT_PASSWORD=example
+    - PGADMIN_DEFAULT_EMAIL=example
+  logging:
+      driver: none
+
+volumes:
+  pgdata:

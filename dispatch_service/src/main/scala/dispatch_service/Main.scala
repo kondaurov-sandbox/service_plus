@@ -1,12 +1,15 @@
 package dispatch_service
 
+import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import dispatch.model.{DispatchInfo, DispatchRefServiceGrpc, Response}
+import dispatch.model.DispatchRefServiceGrpc
 import dispatch.model.Request.GetNewMessage
+import dispatch_service.actors.MainActor
 import io.grpc.ManagedChannelBuilder
-import io.grpc.stub.StreamObserver
 
 object Main extends App {
+
+  val actorSystem = ActorSystem("dispatch_service")
 
   val config = ConfigFactory.load()
 
@@ -19,16 +22,8 @@ object Main extends App {
 
   val refService = DispatchRefServiceGrpc.stub(refServiceChannel)
 
-  val observer = new StreamObserver[DispatchInfo.Id] {
-    override def onNext(value: DispatchInfo.Id): Unit = println(s"got new message: ${value.id}")
+  val mainActor = actorSystem.actorOf(MainActor.props, "main")
 
-    override def onError(t: Throwable): Unit = println("stream error")
-
-    override def onCompleted(): Unit = println("streaming done")
-  }
-
-  refService.getNewMessage(GetNewMessage(), observer)
-
-  Thread.currentThread.join()
+  refService.getNewMessage(GetNewMessage(), new Observer(mainActor = mainActor))
 
 }

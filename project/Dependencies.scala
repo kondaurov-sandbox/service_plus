@@ -9,6 +9,7 @@ object Dependencies {
   lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
   lazy val ficus = "com.iheart" %% "ficus" % "1.4.3"
   lazy val rxscala = "io.reactivex" %% "rxscala" % "0.26.5"
+  lazy val flyway = "org.flywaydb" % "flyway-core" % "5.1.4"
 
   lazy val slick = Seq(
     "com.typesafe.slick" %% "slick" % "3.2.3",

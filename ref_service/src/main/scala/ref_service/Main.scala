@@ -1,5 +1,6 @@
 package ref_service
 
+import com.typesafe.config.ConfigFactory
 import dispatch.model.DispatchRefServiceGrpc
 import io.grpc.ServerBuilder
 
@@ -8,6 +9,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object Main extends App {
 
   Tables // init
+
+  val config = ConfigFactory.load()
+
+  val config_ts = ConfigReader.getRefServiceConfig(config)
+
+  val migrator = new DbMigratorContext(config_ts)
+
+  migrator.flyway.migrate()
 
   val srv = DispatchRefServiceGrpc.bindService(new DispatchRefServiceImpl(), global)
 
