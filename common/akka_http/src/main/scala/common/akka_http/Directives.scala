@@ -5,6 +5,7 @@ import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import org.json4s._
 import org.json4s.JsonAST.JNull
+import org.json4s.jackson.JsonMethods
 import org.json4s.jackson.JsonMethods.parse
 
 import scala.concurrent.Future
@@ -12,7 +13,8 @@ import scala.util.{Failure, Success, Try}
 
 object Directives {
 
-  implicit val formats = DefaultFormats
+  implicit val formats = DefaultFormats ++
+    org.json4s.ext.JavaTypesSerializers.all
 
   def withJson: Directive1[JValue] = {
     extractRequest.flatMap { req =>
@@ -45,6 +47,17 @@ object Directives {
 
     }
 
+  }
+
+  def insideFuture[R](f: Future[R]): Directive1[R] = {
+    onComplete(f).flatMap {
+      case Success(res) => provide(res)
+      case Failure(err) => complete(HttpResponse(status = StatusCodes.BadRequest, entity = s"error: ${err.getMessage}"))
+    }
+  }
+
+  def printJson(json: JValue): Route = {
+    complete(JsonMethods.compact(json))
   }
 
 }

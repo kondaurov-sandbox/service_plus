@@ -19,6 +19,8 @@ services:
    environment:
     - ref_service_host=ref-service
     - ref_service_port=9010
+    - sms_gateway_send_msg_url=http://sms-gateway:8080/api/sendMsg
+    - sms_gateway_read_timeout=20000
    image:  dispatch/dispatch_service:0.1.0-SNAPSHOT
 
  db:
@@ -34,10 +36,11 @@ services:
    logging:
        driver: none
 
- sms_gateway:
+ sms-gateway:
   environment:
    - sms_sender_max_random=10
    - sms_sender_fail_when_less=3
+   - sms_sender_wait_seconds=10
   image: dispatch/sms_gateway:0.1.0-SNAPSHOT
   ports:
    - "9011:8080"

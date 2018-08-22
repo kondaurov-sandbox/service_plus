@@ -9,11 +9,11 @@ import io.grpc.ManagedChannelBuilder
 
 object Main extends App {
 
-  val actorSystem = ActorSystem("dispatch_service")
-
   val config = ConfigFactory.load()
 
   val config_ts = ConfigReader.getDispatchConfig(config)
+
+  val actorSystem = ActorSystem("dispatch_service")
 
   val refServiceChannel = ManagedChannelBuilder.forAddress(
     config_ts.refService.host,
@@ -22,7 +22,9 @@ object Main extends App {
 
   val refService = DispatchRefServiceGrpc.stub(refServiceChannel)
 
-  val mainActor = actorSystem.actorOf(MainActor.props, "main")
+  val smsSender = new SmsSender(config_ts.smsGateway)
+
+  val mainActor = actorSystem.actorOf(MainActor.props(smsSender, refService), "main")
 
   refService.getNewMessage(GetNewMessage(), new Observer(mainActor = mainActor))
 

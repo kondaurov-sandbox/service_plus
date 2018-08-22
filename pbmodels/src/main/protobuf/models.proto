@@ -21,6 +21,10 @@ message DispatchInfo {
         required string id = 1 [(scalapb.field).type = "java.util.UUID"]; // uuid
     }
 
+    message Date {
+        required string date = 1 [(scalapb.field).type = "java.time.LocalDateTime"];
+    }
+
     message WithId {
         required DispatchInfo.Id id = 1;
         required DispatchInfo info = 2;
@@ -29,8 +33,24 @@ message DispatchInfo {
    required string recipient = 1; // номер телефона
    required channelType channel = 2; // Канал доставки: sms|email|viber
    required string content = 3; // текст сообщения
-   required string expiryAt = 4 [(scalapb.field).type = "java.time.LocalDateTime"]; // дата после которой сообщение устаревает
+   required Date expiryAt = 4; // дата после которой сообщение устаревает
    required int32 retriesCount = 5; // количество попыток доставки
+
+}
+
+message DispatchResult {
+
+    enum Status {
+        INPROGRESS = 1;
+        SUCCESS = 2;
+        FAILED = 3;
+        FRESH = 4;
+    }
+
+    required DispatchInfo.Id id = 1;
+    required Status status = 2;
+    optional DispatchInfo.Date deliveredAt = 3;
+    optional string error_msg = 4;
 
 }
 
@@ -40,13 +60,23 @@ message Request {
         required DispatchInfo dispatchInfo = 1;
     }
 
-    message GetNewMessage {}
+    message GetNewMessage {
+    }
 
+    message SetStatus {
+        required DispatchInfo.Id id = 1;
+        required DispatchResult status = 2;
+    }
 
+    message GetStatus {
+        required DispatchInfo.Id id = 1;
+    }
 
 }
 
 message Response {
+
+    message Empty {}
 
     enum Result {
         OK = 1;
@@ -62,5 +92,8 @@ service DispatchRefService {
 
     rpc create(Request.CreateDispatch) returns (DispatchInfo.Id) {} // создать рассылку
     rpc getNewMessage(Request.GetNewMessage) returns (stream DispatchInfo.WithId) {} // получить стрим в котором будут публиковаться новые id рассылок
+
+    rpc setStatus(Request.SetStatus) returns (Response.Empty) {}
+    rpc getStatus(Request.GetStatus) returns (DispatchResult) {}
 
 }

@@ -30,7 +30,9 @@ lazy val dispatch_service = (project in file("dispatch_service"))
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.akka_actors,
-      Dependencies.ficus
+      Dependencies.ficus,
+      Dependencies.scalajHttp,
+      Dependencies.scalatest
     )
   )
   .settings(dockerSettings: _*)
@@ -69,6 +71,7 @@ lazy val akka_http_common = (project in file("common/akka_http"))
     libraryDependencies ++= Seq(
       Dependencies.akka_http,
       Dependencies.akka_stream,
-      Dependencies.json4s
+      Dependencies.json4s,
+      Dependencies.json4sExt
     )
   )

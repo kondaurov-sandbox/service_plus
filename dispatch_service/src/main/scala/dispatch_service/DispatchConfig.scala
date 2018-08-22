@@ -10,5 +10,6 @@ object DispatchConfig {
 }
 
 case class DispatchConfig(
-  refService: DispatchConfig.ServicePath
+  refService: DispatchConfig.ServicePath,
+  smsGateway: SmsSender.Config
 )

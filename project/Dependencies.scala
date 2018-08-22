@@ -11,6 +11,8 @@ object Dependencies {
   lazy val rxscala = "io.reactivex" %% "rxscala" % "0.26.5"
   lazy val flyway = "org.flywaydb" % "flyway-core" % "5.1.4"
   lazy val json4s = "org.json4s" %% "json4s-jackson" % "3.6.0"
+  lazy val json4sExt = "org.json4s" %% "json4s-ext" % "3.6.0"
+  lazy val scalajHttp = "org.scalaj" %% "scalaj-http" % "2.4.1"
 
   lazy val slick = Seq(
     "com.typesafe.slick" %% "slick" % "3.2.3",

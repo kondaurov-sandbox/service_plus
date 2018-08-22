@@ -1,17 +1,15 @@
 package router
 
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import dispatch.model.DispatchInfo
 import dispatch.model.DispatchRefServiceGrpc.DispatchRefService
 import dispatch.model.Request.CreateDispatch
-import pbmodels.{Processor, ValidationRequirements}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
-
 import common.akka_http.Directives._
+import dispatch.model.{DispatchInfo, Request}
+
+import scalapb.json4s.JsonFormat
 
 class Router(
   refService: DispatchRefService
@@ -19,20 +17,29 @@ class Router(
 
   val main: Route = {
     pathEndOrSingleSlash {
-      complete("Welcome to sms dispatcher")
+      complete("Welcome to dispatch router")
     } ~
     pathPrefix("api") {
       pathPrefix("dispatch") {
-        (post & path("create") & withJson) { json =>
+        (path("create") & post & withEntity[Models.CreateDispatch]) { model =>
 
           val newId = for {
-           req <- Future.fromTry(Processor.json2cc[DispatchInfo](json)((d: DispatchInfo) => ValidationRequirements.dispatchInfo(d)))
+           req <- Future.fromTry(model.toProto)
            newId <- refService.create(CreateDispatch(req))
-          } yield newId
+          } yield newId.id.toString
 
-          onComplete(newId) {
-            case Success(id) => complete(id.id.toString)
-            case Failure(err) => complete(HttpResponse(status = StatusCodes.BadRequest, entity = s"error: ${err.getMessage}"))
+          insideFuture(newId) { id =>
+            complete(id)
+          }
+
+        } ~
+        path("hi") { complete("Hi!") } ~
+        (path("getStatus") & post & withEntity[Models.GetDispatchStatus]) { req =>
+
+          val f = refService.getStatus(Request.GetStatus(id = DispatchInfo.Id(req.id)))
+
+          insideFuture(f) { status =>
+            complete(JsonFormat.toJsonString(status))
           }
 
         }

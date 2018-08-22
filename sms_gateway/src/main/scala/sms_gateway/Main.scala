@@ -7,11 +7,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends App {
 
-  val server = new HttpServerContext()
-
   val config = ConfigFactory.load()
 
   val config_ts = ConfigReader.getRouterConfig(config.getConfig("smsGateway"))
+
+  val server = new HttpServerContext()
 
   val smsSender = new SmsSender(config_ts.smsSender)
 

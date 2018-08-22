@@ -7,7 +7,8 @@ object SmsSender {
 
   case class Config(
     maxRandom: Int,
-    failWhenLess: Int
+    failWhenLess: Int,
+    waitSeconds: Int
   )
 
 }
@@ -18,13 +19,19 @@ class SmsSender(
 
   val random = Random
 
-  def send(msg: Models.SendMessage): Future[String] = {
+  def send(msg: Models.SendMessage): Future[String] = Future {
 
     for {
       _ <- {
+
+        if (config.waitSeconds > 0) {
+          println("wait")
+          Thread.sleep(config.waitSeconds * 1000)
+        }
+
         val rand = random.nextInt(config.maxRandom)
 
-        if (rand < config.failWhenLess) {
+        if (!msg.alwaysSuccess.contains(true) && rand < config.failWhenLess) {
           Future.failed(new Exception("failed"))
         } else {
           Future.successful("ok")
@@ -33,6 +40,6 @@ class SmsSender(
       resp <- Future.successful("success")
     } yield resp
 
-  }
+  }.flatten
 
 }

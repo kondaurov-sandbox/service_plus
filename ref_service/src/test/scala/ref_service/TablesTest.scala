@@ -25,7 +25,6 @@ class TablesTest extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
 
     val migrator = new DbMigratorContext(config_ts)
 
-//    migrator.flyway.clean()
     migrator.flyway.migrate()
 
   }
