@@ -1,4 +1,4 @@
-package router
+package common.akka_http
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -23,7 +23,6 @@ class HttpServerContext() {
       case Success(res) => println(s"Server online at http://localhost:8080/\n...")
       case Failure(err) => println(s"Can't start server: ${err.getMessage}")
     }
-
   }
 
 

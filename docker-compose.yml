@@ -34,6 +34,14 @@ services:
    logging:
        driver: none
 
+ sms_gateway:
+  environment:
+   - sms_sender_max_random=10
+   - sms_sender_fail_when_less=3
+  image: dispatch/sms_gateway:0.1.0-SNAPSHOT
+  ports:
+   - "9011:8080"
+
  pgadmin:
   image: dpage/pgadmin4
   ports:

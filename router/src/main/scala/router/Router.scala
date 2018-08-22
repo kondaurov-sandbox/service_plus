@@ -11,6 +11,8 @@ import pbmodels.{Processor, ValidationRequirements}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import common.akka_http.Directives._
+
 class Router(
   refService: DispatchRefService
 )(implicit ec: ExecutionContext) {
@@ -21,10 +23,10 @@ class Router(
     } ~
     pathPrefix("api") {
       pathPrefix("dispatch") {
-        (post & path("create") & entity(as[String])) { body =>
+        (post & path("create") & withJson) { json =>
 
           val newId = for {
-           req <- Future.fromTry(Processor.json2cc[DispatchInfo](body)((d: DispatchInfo) => ValidationRequirements.dispatchInfo(d)))
+           req <- Future.fromTry(Processor.json2cc[DispatchInfo](json)((d: DispatchInfo) => ValidationRequirements.dispatchInfo(d)))
            newId <- refService.create(CreateDispatch(req))
           } yield newId
 

@@ -1,6 +1,7 @@
 package router
 
 import com.typesafe.config.ConfigFactory
+import common.akka_http.HttpServerContext
 import dispatch.model.DispatchRefServiceGrpc
 import io.grpc.ManagedChannelBuilder
 

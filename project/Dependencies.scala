@@ -10,6 +10,7 @@ object Dependencies {
   lazy val ficus = "com.iheart" %% "ficus" % "1.4.3"
   lazy val rxscala = "io.reactivex" %% "rxscala" % "0.26.5"
   lazy val flyway = "org.flywaydb" % "flyway-core" % "5.1.4"
+  lazy val json4s = "org.json4s" %% "json4s-jackson" % "3.6.0"
 
   lazy val slick = Seq(
     "com.typesafe.slick" %% "slick" % "3.2.3",

@@ -6,21 +6,24 @@ val dockerSettings = Seq(
 )
 
 lazy val sms_gateway = (project in file("sms_gateway"))
+  .enablePlugins(JavaServerAppPackaging)
   .settings(
-    libraryDependencies ++= Seq(Dependencies.akka_http)
+    libraryDependencies ++= Seq(
+      Dependencies.ficus
+    )
   )
+  .dependsOn(akka_http_common)
+  .settings(dockerSettings: _*)
 
 lazy val router = (project in file("router"))
   .enablePlugins(JavaServerAppPackaging)
   .settings(
     libraryDependencies ++= Seq(
-      Dependencies.akka_http,
-      Dependencies.akka_stream,
       Dependencies.ficus
     )
   )
   .settings(dockerSettings: _*)
-  .dependsOn(pbmodels)
+  .dependsOn(pbmodels, akka_http_common)
 
 lazy val dispatch_service = (project in file("dispatch_service"))
   .enablePlugins(JavaServerAppPackaging)
@@ -58,5 +61,14 @@ lazy val pbmodels = (project in file("pbmodels"))
     ),
     PB.targets in Compile := Seq(
       scalapb.gen() -> (sourceManaged in Compile).value
+    )
+  )
+
+lazy val akka_http_common = (project in file("common/akka_http"))
+  .settings(
+    libraryDependencies ++= Seq(
+      Dependencies.akka_http,
+      Dependencies.akka_stream,
+      Dependencies.json4s
     )
   )
